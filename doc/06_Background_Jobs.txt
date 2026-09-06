@@ -1,0 +1,21 @@
+Du bist Senior Software Architect und Python/PyQt6-Entwickler. Entwirf die vollständige Background-Job-Architektur eines Prompt-Engineering-Tools. Ziel sind maximale GUI-Reaktionsfähigkeit, minimale Wartezeiten und vollständige Entkopplung aller langlaufenden Operationen vom GUI-Thread.
+
+Im GUI-Thread dürfen ausschließlich Benutzerinteraktionen und Darstellung laufen. Dateiscans, NAS-Zugriffe, Datenbankoperationen, Suchvorgänge, Thumbnail-Erzeugung, Prompt-Parsing, Prompt-Analysen, Evolution-Berechnungen und Indexierungen dürfen niemals im GUI-Thread ausgeführt werden.
+
+Verwende einen zentralen JobManager auf Basis von QThreadPool und QRunnable. Die Anzahl der Worker-Threads soll konfigurierbar sein und standardmäßig 4-8 Threads nutzen. Der JobManager verwaltet Prioritäten, Warteschlangen, Statusinformationen, Fortschrittsmeldungen und Fehlerbehandlung für alle Hintergrundaufgaben.
+
+Implementiere folgende Jobtypen: StartupScanJob für inkrementelle Scans nach Programmstart, FileWatcherJob zur permanenten Überwachung aller indizierten Verzeichnisse, IncrementalIndexerJob für neue, geänderte oder gelöschte Dateien, PromptParserJob zur Tokenisierung und Aktualisierung von prompt_tokens und token_frequency, SearchJob für FTS5-Abfragen, ThumbnailJob zur Erzeugung fehlender Vorschaubilder, PromptAnalysisJob zur Aktualisierung von Similarity-, Cluster-, Varianten- und Statistikdaten, EvolutionJob zur Erstellung oder Aktualisierung von evolution_cache, CacheCleanupJob zur Bereinigung lokaler Caches sowie FullReindexJob für vollständige Neuindizierung.
+
+Verwende ein Prioritätssystem. Höchste Priorität besitzen Bildladen, Promptladen und Suchvorgänge. Mittlere Priorität besitzen Thumbnail-Erzeugung, Dateisynchronisation und Tokenisierung. Niedrige Priorität besitzen Similarity-Berechnungen, Variantenbildung, Evolution-Rebuilds, Statistiken und Cachebereinigung.
+
+Neue oder geänderte Dateien dürfen keine vollständige Neuberechnung aller Analysedaten auslösen. Stattdessen müssen betroffene Datensätze über Dirty-Flags markiert werden. Analysejobs dürfen ausschließlich die markierten Bereiche neu berechnen. Nach erfolgreicher Analyse werden die Dirty-Flags zurückgesetzt.
+
+Prompt Evolution wird niemals beim Öffnen eines Tabs neu berechnet. Existiert ein gültiger Eintrag im evolution_cache, wird dieser sofort verwendet. Eine Neuberechnung erfolgt nur bei fehlenden Daten, gesetztem Dirty-Flag oder expliziter Benutzeranforderung.
+
+Thumbnail-Erzeugung erfolgt vollständig im Hintergrund. Fehlende Vorschaubilder werden in eine Warteschlange aufgenommen und asynchron erzeugt. Die GUI zeigt währenddessen Platzhalter an und aktualisiert die Ansicht automatisch nach Fertigstellung.
+
+Der FileWatcherJob überwacht alle konfigurierten Verzeichnisse. Da NAS-Systeme Änderungen nicht immer zuverlässig melden, muss zusätzlich ein periodischer Hintergrundabgleich existieren. Neue Dateien werden automatisch indexiert, geänderte Dateien aktualisiert und gelöschte Dateien als ungültig markiert oder entfernt.
+
+Alle Jobs müssen abbrechbar sein, Statusinformationen liefern und Fehler protokollieren. Die GUI darf niemals blockieren und muss jederzeit bedienbar bleiben.
+
+Beschreibe die vollständige Architektur von JobManager, QThreadPool, QRunnable, Prioritätssystem, Job-Lebenszyklus, Dirty-Flag-Strategie, Thread-Kommunikation, Fortschrittsmeldungen, Fehlerbehandlung, Ressourcenmanagement, NAS-Zugriffen und dem Zusammenspiel mit SQLite, FTS5, Thumbnail-Cache, RAM-Cache, Parsing Engine und Prompt Analysis Engine. Liefere eine produktionsreife Architektur mit Fokus auf Skalierbarkeit, minimale Neuberechnungen und maximale Reaktionsgeschwindigkeit.

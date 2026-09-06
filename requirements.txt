@@ -1,0 +1,12 @@
+# Laufzeitabhaengigkeiten.
+# Stand M0: alle bereits in der genutzten Python-Installation vorhanden,
+# es muss nichts nachinstalliert werden. Bewusst kein venv (Projektvorgabe).
+PyQt6>=6.6            # GUI, ab M1
+Pillow>=10.0          # Thumbnail-Erzeugung inkl. WebP, ab M1
+numpy>=1.26           # Vektoroperationen der Similarity-Berechnung, ab M4
+
+# Nicht benoetigt und bewusst nicht aufgenommen:
+#   watchdog     - der periodische Reconciler ist der Primaermechanismus,
+#                  QFileSystemWatcher reicht als lokaler Beschleuniger
+#   rapidfuzz    - die Aehnlichkeit arbeitet auf Segmentmengen, nicht auf Strings
+#   scikit-learn - Clustering laeuft als Union-Find ueber kNN-Kanten

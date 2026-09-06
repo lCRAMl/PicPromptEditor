@@ -1,0 +1,23 @@
+Du bist Senior Software Architect und Python/PyQt6-Entwickler. Entwirf die vollständige Cache-Architektur eines Prompt-Engineering-Tools für sehr große Bild-/Prompt-Bibliotheken auf einem NAS. Ziel sind minimale NAS-Zugriffe, schnelle Programmstarts, sofortige GUI-Reaktion und maximale Wiederverwendung bereits berechneter Daten.
+
+Es wird bewusst kein Cache für Originalbilder verwendet. Originalbilder verbleiben auf dem NAS und werden nur bei Bedarf für Detailansicht, Vergleich oder Öffnen im Windows-Standardviewer geladen.
+
+Die Cache-Architektur besteht aus persistentem Thumbnail-Cache, RAM-Thumbnail-Cache, Prompt-Cache, FTS5-Suchindex, Evolution-Cache, Similarity-Cache und Cluster-Cache. Alle häufig benötigten Daten sollen lokal verfügbar sein, sodass mindestens 95 % aller Benutzeraktionen ohne NAS-Zugriffe ausgeführt werden können.
+
+Der Thumbnail-Cache wird lokal auf dem Client gespeichert und überdauert Programmneustarts. Thumbnails werden nur einmal aus dem Originalbild erzeugt und anschließend wiederverwendet. Die GUI verwendet für Übersichten ausschließlich gecachte Thumbnails und niemals Originalbilder. Verwende WebP als internes Thumbnailformat. Unterstütze mehrere Größenstufen wie 128 px, 256 px und 512 px. Die Cachedateien werden über einen eindeutigen thumbnail_key identifiziert, der aus Pfad, Dateigröße und Änderungsdatum abgeleitet wird. Ändert sich das Originalbild, wird automatisch ein neuer Cacheeintrag erzeugt.
+
+Die Thumbnail-Erzeugung erfolgt Lazy Loading basiert. Es dürfen niemals alle Bilder einer Bibliothek sofort verarbeitet werden. Erzeugt werden zunächst nur aktuell sichtbare Thumbnails. Beim Scrollen werden weitere Bilder bei Bedarf verarbeitet. Zusätzlich soll ein Vorladebereich für angrenzende Bilder existieren, um flüssiges Scrollen zu ermöglichen.
+
+Zusätzlich existiert ein RAM-Thumbnail-Cache mit LRU-Strategie für die zuletzt verwendeten Vorschaubilder. Häufig angezeigte Thumbnails sollen ohne Datei- oder Datenbankzugriff verfügbar sein.
+
+Prompttexte werden vollständig lokal in der SQLite-Datenbank gespeichert und bilden den Prompt-Cache. Editor, Suche, Vergleich, Statistik und Evolution dürfen niemals Promptdateien direkt vom NAS lesen.
+
+Der FTS5-Index dient als permanenter lokaler Suchcache. Suchvorgänge erfolgen ausschließlich gegen den Volltextindex und niemals gegen Dateien oder Verzeichnisse.
+
+Evolution-Daten werden im evolution_cache gespeichert. Evolution-Tabs dürfen niemals die vollständige Bibliothek neu analysieren. Existierende Evolution-Strukturen werden sofort aus dem Cache geladen. Neuberechnungen erfolgen nur bei geänderten Daten oder auf ausdrücklichen Benutzerwunsch.
+
+Similarity-Daten, Variantenanalysen, Clusterstrukturen und Tokenstatistiken werden ebenfalls lokal gespeichert und wiederverwendet. Bereits berechnete Ergebnisse dürfen nicht erneut erzeugt werden, solange keine relevanten Änderungen erkannt wurden.
+
+Verwende für alle Analyse-Caches eine Dirty-Flag-Strategie. Neue oder geänderte Dateien markieren ausschließlich die betroffenen Datensätze als veraltet. Analysejobs berechnen nur diese Bereiche neu. Vollständige Neuberechnungen sind ausschließlich über eine explizite Neuindizierung zulässig.
+
+Erweitere die Tabelle images um die notwendigen Felder zur Cacheverwaltung, beispielsweise thumbnail_key, thumbnail_exists und thumbnail_updated. Beschreibe die vollständige Architektur von persistentem Cache, RAM-Cache, Cache-Lebenszyklus, Invalidierung, Dirty-Flags, LRU-Strategie, Lazy Loading, Vorladen angrenzender Inhalte, Cachebereinigung, Speicherbegrenzung und Zusammenspiel mit SQLite, FTS5, Parsing Engine, Analysis Engine und Background Jobs. Ziel sind minimale NAS-Zugriffe, minimale Neuberechnungen und maximale GUI-Performance auch bei Bibliotheken mit mehreren hunderttausend Bildern und Prompts.

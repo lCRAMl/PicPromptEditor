@@ -1,0 +1,9 @@
+-r requirements.txt
+pytest>=8.0
+
+# pytest-qt wird NICHT als qtbot-Fixture benutzt - kein einziger Test ruft es.
+# Es steht hier, weil es in dieser Installation vorhanden ist und sich seine
+# Qt-Bindung sonst selbst aussucht; tests/conftest.py legt sie ueber
+# PYTEST_QT_API fest. Die GUI-Tests bauen ihre Widgets selbst und laufen
+# ueber die Offscreen-Plattform von Qt.
+pytest-qt>=4.4

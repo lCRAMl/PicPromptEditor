@@ -1,0 +1,33 @@
+Du bist Senior Software Architect, Datenbankarchitekt und Python-Entwickler. Entwirf die vollständige SQLite-Datenbankimplementierung für ein Prompt-Engineering-Tool mit lokalen Indizes, lokalem Thumbnail-Cache und NAS-basierten Originaldateien. Ziel ist maximale Performance bei minimalen NAS-Zugriffen. Alle Such-, Analyse-, Vergleichs-, Evolution- und Thumbnail-Funktionen arbeiten ausschließlich gegen lokale Daten.
+
+Verwende genau eine SQLite-Datenbank namens library.db. Definiere alle Tabellen vollständig mit Datentypen, Primary Keys, Foreign Keys, Constraints, Indizes sowie den notwendigen CREATE TABLE-, CREATE INDEX- und FTS5-Statements.
+
+Die Tabelle folders enthält id, path, last_scan, last_modified und active. Jeder Ordner darf nur einmal existieren.
+
+Die Tabelle images enthält id, folder_id, filename, full_path, extension, file_size, modified_time, file_hash, prompt_id, exists, thumbnail_key, thumbnail_exists und thumbnail_updated. folder_id referenziert folders.id. prompt_id referenziert prompts.id. exists kennzeichnet gelöschte Dateien ohne deren Historie zu verlieren. thumbnail_key identifiziert eindeutig die aktuelle Thumbnail-Version eines Bildes. thumbnail_exists kennzeichnet vorhandene Cache-Dateien. thumbnail_updated speichert den letzten Aktualisierungszeitpunkt des erzeugten Thumbnails.
+
+thumbnail_key wird aus Pfad, Dateigröße und Änderungsdatum des Originalbilds abgeleitet. Ändert sich das Originalbild, muss automatisch ein neuer Schlüssel entstehen und das bestehende Thumbnail als veraltet gelten.
+
+Die Tabelle prompts enthält id, filename, full_path, prompt_text, file_size, modified_time, file_hash, token_count und exists. Der vollständige Prompttext wird lokal gespeichert, damit Editor, Suche, Vergleich und Evolution niemals Promptdateien vom NAS lesen müssen.
+
+Zusätzlich existiert eine FTS5-Tabelle prompts_fts zur Volltextsuche auf prompt_text. Alle Suchanfragen erfolgen ausschließlich über diesen Index.
+
+Die Tabelle tokens enthält eindeutige Promptbestandteile mit id und token.
+
+Die Tabelle token_frequency enthält token_id, usage_count und importance. usage_count speichert die Anzahl der Verwendungen. importance repräsentiert die relative Wichtigkeit eines Tokens und wird für Promptanalyse, Basisprompt-Erkennung, Variantenanalyse und Hervorhebungen im Editor verwendet.
+
+Die Tabelle prompt_variants enthält id, base_prompt_id, variant_prompt_id und similarity. Sie beschreibt Beziehungen zwischen Basisprompts und Varianten.
+
+Die Tabelle evolution_cache enthält id, base_prompt_id, tree_json, generated_at und version. tree_json speichert die vollständige Evolution-Struktur als JSON und ermöglicht das sofortige Laden von Evolution-Tabs ohne Neuberechnung.
+
+Die Tabelle settings enthält key und value für Programmeinstellungen wie Thumbnailgröße, Theme, Cachegrenzen, Watcher-Konfiguration und Indexierungsoptionen.
+
+Zusätzlich existiert die Tabelle scan_history mit id, scan_time, duration, new_files, changed_files und deleted_files zur Protokollierung aller Scanvorgänge.
+
+Es existiert bewusst keine image_prompt_pairs Tabelle, da Bild und Prompt dauerhaft dieselbe Basiskennung besitzen und die Zuordnung immer 1:1 ist.
+
+Originalbilder, BLOBs, Vollbilder, EXIF-Dumps und große Vorschauen dürfen niemals in der Datenbank gespeichert werden. Die Datenbank enthält ausschließlich Metadaten, Prompttexte, Analyseergebnisse und Cacheinformationen.
+
+Der Thumbnail-Cache wird außerhalb der Datenbank als persistenter lokaler WebP-Cache gespeichert und überdauert Programmneustarts. Die Datenbank speichert lediglich die Verwaltungsinformationen. Thumbnaildateien werden bedarfsgesteuert erzeugt und über thumbnail_key referenziert. Die GUI darf für Übersichtsansichten ausschließlich diese gecachten Thumbnails verwenden und niemals Originalbilder laden.
+
+Beschreibe außerdem alle Tabellenbeziehungen, Foreign Keys, Primärschlüssel, Constraints, Indizes, FTS5-Integration, Thumbnail-Cache-Verwaltung, Cache-Invalidierung über thumbnail_key, Löschstrategien über exists-Flags, die Aktualisierung von token_frequency, die Berechnung von similarity, die Speicherung von Evolution-Daten, Unterstützung für inkrementelle Scans, NAS-Betrieb, Lazy-Loading von Thumbnails und die langfristige Erweiterbarkeit. Liefere ein vollständiges produktionsreifes Datenbankschema inklusive aller SQL-Statements sowie eine Begründung jeder Designentscheidung.

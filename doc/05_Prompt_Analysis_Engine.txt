@@ -1,0 +1,23 @@
+Du bist Senior Software Architect, Data Engineer und Python-Entwickler. Entwirf die vollständige Prompt Analysis Engine eines Prompt-Engineering-Tools. Sie basiert auf der bestehenden Parsing Engine und verarbeitet die Daten aus prompts, tokens, prompt_tokens, token_frequency, prompt_variants und evolution_cache. Ziel ist die automatische Erkennung von Basisprompts, Varianten, Ähnlichkeiten, Clustern, Evolution-Strukturen und statistischen Zusammenhängen.
+
+Die Analysis Engine arbeitet ausschließlich auf lokal gespeicherten Daten und erzeugt niemals Laufzeitabfragen gegen NAS-Dateien. Alle Analysen sollen inkrementell aktualisierbar sein und nur bei geänderten Daten neu berechnet werden.
+
+Jeder Prompt wird über prompt_tokens analysiert. Die Engine berechnet usage_count und importance für alle Tokens. usage_count entspricht der Anzahl der Prompts, die einen Token enthalten. importance repräsentiert die relative Bedeutung eines Tokens innerhalb der gesamten Bibliothek und dient später für Editor-Hervorhebungen, Basisprompt-Erkennung und Statistikfunktionen.
+
+Die Engine erkennt automatisch Basisprompts. Häufig gemeinsam auftretende Tokens bilden einen Basisprompt. Seltene oder zusätzliche Tokens werden als Variantenbestandteile betrachtet. Basisprompts müssen für jede Promptfamilie automatisch ermittelt werden.
+
+Für jeden Prompt wird eine Ähnlichkeitsanalyse durchgeführt. Verglichen werden die enthaltenen Tokens, nicht der Rohtext. Die Engine berechnet einen Similarity Score und erkennt gemeinsame, hinzugefügte und entfernte Tokens. Die Ergebnisse werden für Promptvergleiche, Variantenanalyse und Evolution verwendet.
+
+Promptvarianten werden automatisch erkannt. Die Engine bestimmt für jeden Prompt den wahrscheinlichsten Basisprompt sowie die zugehörigen Abweichungen. Hinzugefügte, entfernte und geänderte Tokens werden gespeichert. Die Ergebnisse werden in prompt_variants abgelegt.
+
+Die Engine erstellt automatisch Prompt-Cluster. Ähnliche Prompts werden zu Familien gruppiert. Jede Familie besitzt einen Basisprompt, eine Menge von Varianten und statistische Kennzahlen. Cluster dienen später der Navigation, Analyse und Evolution.
+
+Die Engine erzeugt Prompt-Evolution-Bäume. Ausgangspunkt ist jeweils ein Basisprompt. Varianten entstehen durch hinzugefügte, entfernte oder geänderte Tokens. Die Evolution wird als hierarchische Struktur gespeichert und in evolution_cache als JSON abgelegt, damit Evolution-Tabs ohne Neuberechnung geöffnet werden können.
+
+Die Segmentsuche arbeitet auf Basis von prompt_tokens. Für jeden Token muss schnell ermittelt werden können, in welchen Prompts und Bildern er verwendet wird. Es dürfen keine Volltextdurchläufe über sämtliche Prompts erforderlich sein.
+
+Die Vergleichsansicht verwendet ausschließlich die Analyseergebnisse. Unterschiede werden tokenbasiert erkannt. Änderungen wie "blue eyes" zu "green eyes" werden als gezielte Tokenänderung und nicht als Zeilenänderung behandelt.
+
+Die Engine stellt für jeden Prompt Statistiken bereit, darunter Tokenanzahl, Basisprompt, nächste Varianten, Similarity-Werte, gemeinsame Tokens, unterschiedliche Tokens, Clusterzugehörigkeit und Evolutionsinformationen.
+
+Entwirf die vollständige Architektur einschließlich Datenfluss, Analysepipeline, Similarity-Berechnung, Basisprompt-Erkennung, Variantenbildung, Clusterbildung, Evolution-Generierung, Aktualisierungsstrategie, inkrementeller Neubewertung, Datenbankintegration und Performanceoptimierung. Definiere die benötigten zusätzlichen Tabellen, Felder, Indizes und Cachemechanismen. Ziel sind maximale Skalierbarkeit, minimale Neuberechnungen und sofortige Verfügbarkeit aller Analyseergebnisse für die GUI.

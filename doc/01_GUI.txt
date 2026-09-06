@@ -1,0 +1,35 @@
+Du bist Senior Software Architect und UX-Designer. Entwirf die GUI eines Desktop-Tools für Prompt-Engineering auf Basis von Python, PyQt6 und nativen Qt-Widgets. Die Anwendung übernimmt automatisch den Windows Light-/Dark-Mode und orientiert sich optisch sowie funktional an Visual Studio.
+
+Jedes Bild (*.jpg, *.png) besitzt eine gleichnamige Promptdatei (*.txt). Die Anwendung dient zum Durchsuchen, Bearbeiten, Analysieren und Vergleichen großer Bild-/Prompt-Sammlungen. Grundprinzip: Kein Prompt ohne Bild, kein Bild ohne Prompt.
+
+Das Hauptfenster verwendet ein festes, nicht schließbares Tab [Bibliothek] mit folgendem Aufbau:
+
++-------------+----------------------+-------------+
+| Ordnerbaum  |    Prompt Editor     | Bildansicht |
++-------------+----------------------+-------------+
+|            Thumbnail Explorer      |
++------------------------------------+
+
+Zusätzliche Tabs dürfen für Vergleiche, Suchergebnisse, Analysen und Prompt Evolution geöffnet und geschlossen werden.
+
+Der Ordnerbaum arbeitet ähnlich dem Windows Explorer mit auf- und zuklappbaren Ordnern. Optional können Bild-/Prompt-Anzahlen angezeigt werden. Linksklick lädt die Ordnerinhalte in den Thumbnail Explorer. Das Kontextmenü enthält typische Analyse- und Verwaltungsfunktionen. Tooltips können Bildanzahl, Promptanzahl, Unterordner und Änderungsdatum anzeigen.
+
+Der Prompt Editor ist das zentrale Werkzeug. Er unterstützt Syntax Highlighting, Hervorhebung wichtiger Promptbestandteile, Basisprompts, Varianten und Abweichungen. Über das Kontextmenü können markierte Promptsegmente gesucht, ähnliche Verwendungen gefunden oder die Prompt Evolution geöffnet werden.
+
+Die Segmentsuche öffnet ein neues Tab und zeigt alle Bilder, deren Prompt das markierte Segment enthält.
+
+Der Thumbnail Explorer ist eine kontextabhängige Ergebnisansicht mit skalierbaren und virtualisierten Thumbnails. Er wird durch Ordnerauswahl, Suchvorgänge, Analysen oder Prompt Evolution gefüllt. Eine Statuszeile zeigt die Herkunft der aktuellen Ergebnisse. Linksklick lädt Bild und Prompt, Doppelklick öffnet einen neuen Tab, Rechtsklick öffnet ein Kontextmenü mit Funktionen wie Öffnen, Vergleichen, Im Explorer anzeigen und Für Vergleich markieren.
+
+Die Bildansicht befindet sich dauerhaft rechts und zeigt immer das aktuell ausgewählte Bild. Sie unterstützt Zoom und Schwenken. Linksklick öffnet das Bild im Windows-Standardviewer. Das Kontextmenü enthält Funktionen wie Für Vergleich markieren, Vergleich starten, Im Explorer anzeigen und Prompt Evolution anzeigen. Markierte Vergleichsbilder werden dauerhaft sichtbar gekennzeichnet.
+
+Prompt Evolution ist keine feste Ansicht des Hauptfensters. Sie wird ausschließlich über das Kontextmenü eines Bildes oder Prompts geöffnet und erscheint in einem eigenen Tab. Die Darstellung ähnelt einem interaktiven Stammbaum oder Git-Branch und visualisiert Basisprompts, Varianten sowie deren Beziehungen. Jeder Knoten besitzt Thumbnail, repräsentativen Prompt, Bildanzahl und Häufigkeitsinformationen. Kontextinformationen werden per Mouseover angezeigt. Doppelklick zeigt alle Bilder eines Knotens im Thumbnail Explorer.
+
+Die Vergleichsansicht wird über zwei ausgewählte Bilder geöffnet und erscheint in einem eigenen Tab.
+
++---------+-------------+-------------+---------+
+| Bild A  |  Prompt A   |  Prompt B   | Bild B  |
++---------+-------------+-------------+---------+
+
+Die Bilder befinden sich außen, die Editoren innen. Beide Editoren scrollen synchron und markieren Unterschiede ähnlich WinMerge. Gelb kennzeichnet Änderungen, Grün Hinzufügungen, Rot Entfernungen und Weiß identische Inhalte. Unterschiede werden tokenbasiert statt zeilenbasiert hervorgehoben. Optional werden Übereinstimmung, gemeinsame Tokens, unterschiedliche Tokens und erkannte Basisprompts angezeigt.
+
+Erstelle mindestens drei GUI-Konzepte. Beschreibe jeweils Fensteraufteilung, Benutzerworkflow, Vorteile, Nachteile, Skalierbarkeit für sehr große Bibliotheken und geeignete Qt6-Komponenten. Gib abschließend eine begründete Architektur-Empfehlung.

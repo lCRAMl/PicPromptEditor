@@ -1,0 +1,34 @@
+Du bist Senior Software Architect und Python/PyQt6-Entwickler. Entwirf die vollständige Schichtarchitektur eines Prompt-Engineering-Tools. Ziel ist maximale Wartbarkeit, Erweiterbarkeit, Testbarkeit und klare Verantwortlichkeiten. Direkte Abhängigkeiten zwischen GUI, Datenbank, Analysemodulen und Dateisystem sind zu vermeiden. Jede Schicht darf ausschließlich über definierte Schnittstellen mit der darunterliegenden Schicht kommunizieren.
+
+Verwende folgende Schichten:
+
+GUI Layer für sämtliche Fenster, Tabs, Dialoge und Widgets wie MainWindow, PromptEditor, ImageView, ThumbnailExplorer, CompareView und EvolutionView. Diese Schicht enthält ausschließlich Darstellung und Benutzerinteraktion. Sie kennt weder SQL, NAS-Zugriffe, Dateisystemoperationen, Parsing noch Analysealgorithmen.
+
+Service Layer als zentrale Anwendungsschicht. Beispiele sind PromptService, ImageService, SearchService, EvolutionService und AnalysisService. Die GUI kommuniziert ausschließlich mit Services. Services koordinieren Anfragen, steuern Workflows, starten Background Jobs und liefern aufbereitete Daten an die Oberfläche.
+
+Analysis Layer enthält die fachliche Intelligenz der Anwendung. Hier befinden sich Parsing Engine, Tokenizer, Similarity Engine, Cluster Engine, Variant Detection und Evolution Builder. Diese Schicht verarbeitet Daten, kennt jedoch weder Widgets noch GUI-Komponenten.
+
+Repository Layer kapselt sämtliche Datenbankzugriffe. Enthält beispielsweise ImageRepository, PromptRepository, TokenRepository, SettingsRepository und EvolutionRepository. Alle SQL-Abfragen, FTS5-Abfragen, Datenbanktransaktionen und Datenbankobjekte befinden sich ausschließlich in dieser Schicht. Weder GUI, Services noch Analysemodule dürfen direkt SQL ausführen.
+
+Filesystem Layer verwaltet NAS-Zugriffe, Dateiüberwachung, Verzeichnis-Scans, Thumbnail-Cache und Dateimetadaten. Enthält Scanner, FileWatcher, ThumbnailCache und Dateisystemdienste. Nur diese Schicht darf mit Dateien, Verzeichnissen, NAS-Pfaden oder dem lokalen Thumbnail-Cache arbeiten.
+
+Background-Jobs bilden eine eigene Querschnittsschicht. JobManager, ScanJobs, ParserJobs, SearchJobs, ThumbnailJobs, AnalysisJobs und EvolutionJobs arbeiten über definierte Services und kommunizieren niemals direkt mit GUI-Komponenten.
+
+Die Datenflussrichtung ist strikt einzuhalten:
+
+GUI Layer -> Service Layer -> Analysis Layer / Repository Layer -> Filesystem Layer
+
+Abhängigkeiten in Gegenrichtung sind nicht erlaubt. GUI darf keine Datenbankzugriffe ausführen. Analysemodule dürfen keine Widgets kennen. Repositorys dürfen keine GUI-Objekte verwenden. Filesystem-Komponenten dürfen keine Geschäftslogik enthalten.
+
+Definiere eine konkrete Projektstruktur:
+
+app/
+gui/
+services/
+analysis/
+repositories/
+filesystem/
+jobs/
+database/
+
+Beschreibe die Verantwortung jeder Schicht, ihre öffentlichen Schnittstellen, erlaubte Abhängigkeiten, Kommunikationswege, Fehlerweitergabe und Interaktion mit SQLite, FTS5, Thumbnail-Cache, Parsing Engine, Prompt Analysis Engine, Evolution Engine und Background Jobs. Ziel ist eine produktionsreife Architektur, in der einzelne Komponenten später austauschbar oder erweiterbar sind, ohne Änderungen an anderen Schichten zu erzwingen.

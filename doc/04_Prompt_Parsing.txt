@@ -1,0 +1,38 @@
+Du bist Senior Software Architect, Datenmodellierer und Python-Entwickler. Entwirf die vollständige Prompt-Parsing-Engine für ein Prompt-Engineering-Tool. Ziel ist eine konsistente Grundlage für Segmentsuche, Volltextsuche, Promptvergleich, Variantenbildung, Basisprompt-Erkennung, Token-Häufigkeiten, Prompt Evolution und statistische Analysen.
+
+Jeder Prompt wird beim Import genau einmal analysiert. Der Originalprompt bleibt unverändert in prompts.prompt_text gespeichert. Zusätzlich wird eine normalisierte Analyseform erzeugt.
+
+Die Parsing-Pipeline besteht aus Normalisierung, Tokenisierung, Tokenzuordnung und Statistikberechnung. Alle Folgefunktionen arbeiten ausschließlich mit den geparsten Daten und niemals direkt mit dem Originaltext.
+
+Normalisierung: Zeilenumbrüche, Kommas und Semikolons trennen Tokens. Mehrfachleerzeichen werden entfernt. Groß-/Kleinschreibung wird für Analysen ignoriert, der Originaltext bleibt jedoch unverändert erhalten. Vergleichbare Schreibweisen sollen auf eine einheitliche Form reduziert werden.
+
+Tokenisierung: Aus einem Prompt werden einzelne semantische Bestandteile extrahiert. Beispiel: "masterpiece, blue eyes, cinematic lighting" erzeugt die Tokens "masterpiece", "blue eyes" und "cinematic lighting". Tokens werden einmalig in der Tabelle tokens gespeichert.
+
+Gewichtungen müssen erkannt werden. Konstrukte wie "(masterpiece)", "((masterpiece))", "(masterpiece:1.2)" oder "[masterpiece]" werden analysiert. Der eigentliche Token wird extrahiert und Gewichtung bzw. Betonungsstufe separat gespeichert. Die Analyse darf Gewichtungsinformationen nicht verlieren.
+
+Positive und negative Prompts müssen getrennt behandelt werden. Negative Tokens werden als solche gekennzeichnet und dürfen unabhängig von positiven Tokens analysiert werden.
+
+Erweitere das Datenbankschema um die Tabelle prompt_tokens:
+
+prompt_tokens
+-------------
+id
+prompt_id
+token_id
+weight
+position
+negative
+
+prompt_id referenziert prompts.id. token_id referenziert tokens.id. weight enthält Gewichtungen oder Betonungsstufen. position speichert die ursprüngliche Reihenfolge im Prompt. negative kennzeichnet positive oder negative Tokens.
+
+Die Tabelle tokens enthält ausschließlich eindeutige Tokens. Die Tabelle token_frequency speichert für jeden Token usage_count und importance. usage_count repräsentiert die Anzahl der Verwendungen. importance wird aus der relativen Häufigkeit innerhalb der gesamten Bibliothek berechnet.
+
+Jeder Import aktualisiert automatisch prompt_tokens und token_frequency. Token-Häufigkeiten dürfen nicht durch vollständige Neuberechnungen entstehen, sondern müssen inkrementell aktualisiert werden.
+
+Promptvergleich verwendet die Tokenstruktur statt reiner Textvergleiche. Änderungen wie "blue eyes" zu "green eyes" sollen auf Tokenebene erkannt werden. Gemeinsame Tokens, hinzugefügte Tokens und entfernte Tokens müssen eindeutig ermittelt werden.
+
+Prompt Evolution arbeitet ausschließlich auf Basis von prompt_tokens und token_frequency. Basisprompts werden über häufig gemeinsam verwendete Tokens erkannt. Varianten entstehen durch hinzugefügte oder entfernte Tokens. Evolution-Daten werden anschließend in prompt_variants und evolution_cache gespeichert.
+
+Die Segmentsuche arbeitet primär über prompt_tokens. Wird ein Token oder Promptsegment ausgewählt, sollen alle zugehörigen Prompts und Bilder ohne Volltextdurchsuchung gefunden werden können.
+
+Beschreibe die vollständige Architektur der Parsing-Pipeline, die Tokenisierungsregeln, Gewichtungsbehandlung, Behandlung negativer Prompts, Berechnung von usage_count und importance, Pflege von prompt_tokens, Aktualisierung von token_frequency, Erkennung von Basisprompts, Variantenbildung, Promptvergleich und Prompt Evolution. Liefere ein produktionsreifes Konzept inklusive Datenfluss vom Originalprompt bis zu den Analysefunktionen.

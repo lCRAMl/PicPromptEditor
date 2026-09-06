@@ -1,0 +1,34 @@
+__pycache__/
+*.py[cod]
+*.egg-info/
+build/
+dist/
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Laufzeitdaten gehoeren nie ins Repository
+*.db
+*.db-wal
+*.db-shm
+*.bak
+bootstrap.json
+logs/
+thumbnails/
+
+.vscode/
+.idea/
+
+# Vom Bau erzeugt
+build_version.py
+output/
+pyinstaller_build/
+*.spec
+
+# Arbeitsartefakte, die im Repository nichts verloren haben
+# (Bildschirmfotos aus dem Betrieb zeigen echte Ordnernamen der Bibliothek)
+x.jpg
+x2.jpg
+x3.jpg
+vscode.jpg
+vscode.png

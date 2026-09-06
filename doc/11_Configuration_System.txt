@@ -1,0 +1,13 @@
+Du bist Senior Software Architect und Python/PyQt6-Entwickler. Entwirf das vollständige Konfigurationssystem eines Prompt-Engineering-Tools. Ziel ist eine zentrale, versionierbare und erweiterbare Verwaltung sämtlicher Programmeinstellungen.
+
+Konfigurationen werden dauerhaft in der Tabelle settings der SQLite-Datenbank gespeichert und zusätzlich über einen zentralen SettingsService verwaltet. Die Anwendung darf Einstellungen niemals direkt lesen oder schreiben, sondern ausschließlich über diesen Service zugreifen.
+
+Definiere Konfigurationen für NAS-Pfade, überwachte Ordner, Thumbnailgrößen, Cachegrößen, RAM-Cache-Limits, Thumbnail-Cache-Pfade, Anzahl der Worker-Threads, Datei-Watcher-Intervalle, Hintergrundscan-Intervalle, Theme-Einstellungen, Sprachoptionen, Logging-Level, Debug-Modus, automatische Neuindizierung, Evolution-Cache-Verhalten, Similarity-Grenzwerte, Cluster-Grenzwerte, FTS5-Optionen, Datenbankpfade, Backup-Einstellungen und Performance-Parameter.
+
+Jeder Eintrag besitzt Schlüssel, Wert, Datentyp, Standardwert und Validierungsregeln. Beim ersten Start werden Standardwerte automatisch erzeugt. Fehlende Einstellungen werden automatisch ergänzt. Ungültige Einstellungen werden auf gültige Standardwerte zurückgesetzt und protokolliert.
+
+Das System unterstützt Versionsverwaltung von Konfigurationen. Neue Softwareversionen dürfen zusätzliche Einstellungen hinzufügen, ohne bestehende Installationen zu beschädigen. Konfigurationsmigrationen erfolgen automatisch beim Start.
+
+Konfigurationsänderungen werden sofort validiert und gespeichert. Einstellungen mit Auswirkung auf laufende Prozesse müssen Änderungsereignisse auslösen, damit betroffene Komponenten ihre Konfiguration neu laden können.
+
+Beschreibe Architektur, Speicherformat, Validierung, Migration, Änderungsbenachrichtigungen, Standardwerte, Fehlerbehandlung, Sicherung und Wiederherstellung von Einstellungen sowie die vollständige Interaktion mit GUI, Services, Background Jobs, Cache Layer, Datenbank und Dateisystem. Ziel ist ein robustes, langfristig erweiterbares Konfigurationssystem ohne hardcodierte Parameter.

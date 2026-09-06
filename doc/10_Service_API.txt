@@ -1,0 +1,11 @@
+Du bist Senior Software Architect und Python/PyQt6-Entwickler. Entwirf die vollständige Service-API eines Prompt-Engineering-Tools. Die Service-Schicht bildet die einzige öffentliche Schnittstelle zwischen GUI, Analysemodulen, Datenbank, Dateisystem und Background Jobs. Die GUI kommuniziert ausschließlich mit Services. Direkte Zugriffe auf Repositorys, SQLite, NAS, Parser, Analyzer oder Cache-Komponenten sind verboten.
+
+Definiere eine klare Service-Architektur mit PromptService, ImageService, SearchService, EvolutionService, AnalysisService, IndexService, SettingsService, CacheService und SystemService. Jeder Service besitzt eine klar definierte Verantwortlichkeit und stellt eine stabile öffentliche API bereit.
+
+PromptService verwaltet Laden, Speichern, Bearbeiten, Vergleichen und Analysieren von Prompts sowie Token-, Varianten- und Statistikabfragen. ImageService verwaltet Bildinformationen, Thumbnailzugriffe, Bildvorschauen und Vergleichsmarkierungen. SearchService kapselt FTS5-Suche, Segmentsuche, Tokensuche und Ähnlichkeitssuche. EvolutionService liefert Evolution-Bäume, Variantenstrukturen und Evolutionsstatistiken. AnalysisService verwaltet Parsing, Tokenisierung, Similarity, Cluster und Variantenanalysen. IndexService steuert Scanner, Dateiüberwachung, Neuindizierung und Hintergrundanalysen. CacheService verwaltet Thumbnail-Cache, RAM-Cache und Analyse-Caches. SettingsService verwaltet alle Programmeinstellungen. SystemService liefert Statusinformationen über NAS, Datenbank, Caches, Jobs und Systemzustand.
+
+Alle Services geben strukturierte DTOs oder Domänenobjekte zurück und niemals rohe SQL-Ergebnisse. Services koordinieren Repositorys, Analysis Engine, Cache Layer und Background Jobs. Langlaufende Operationen werden ausschließlich über den JobManager ausgelöst.
+
+Definiere öffentliche Methoden, Rückgabestrukturen, Fehlerbehandlung, Statusrückmeldungen und Interaktion zwischen den Services. Beschreibe die Datenflüsse für typische Benutzeraktionen wie Ordner öffnen, Prompt laden, Segmentsuche, Promptvergleich, Evolution anzeigen, Neuindizierung und Bildauswahl.
+
+Ziel ist eine stabile, erweiterbare Service-Schicht, die die GUI vollständig von Datenbank, Dateisystem, Parsing Engine, Analysis Engine und Hintergrundverarbeitung entkoppelt.

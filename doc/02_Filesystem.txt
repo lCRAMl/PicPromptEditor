@@ -1,0 +1,31 @@
+Du bist Senior Software Architect und Python-Entwickler. Entwirf die Architektur für Dateiverwaltung, Indexierung, Caching und Dateisystemüberwachung eines Prompt-Engineering-Tools für sehr große Bild-/Prompt-Bibliotheken.
+
+Die Daten liegen auf einem NAS. Jedes Bild (*.jpg, *.png) besitzt eine gleichnamige Promptdatei (*.txt). Bibliotheken können von einigen tausend bis zu mehreren hunderttausend Bild-/Prompt-Paaren umfassen. Dateien können während der Laufzeit hinzugefügt, geändert oder gelöscht werden.
+
+Ziel ist maximale Performance bei minimalen NAS-Zugriffen. Die GUI muss jederzeit reaktionsschnell bleiben und darf niemals direkt auf NAS, HDD oder Verzeichnisse zugreifen.
+
+Verwende genau eine lokale SQLite-Datenbank library.db mit den Tabellen images, prompts, folders, tokens, token_frequency, prompt_variants, evolution_cache und settings.
+
+images speichert Dateiname, Pfad, Größe, Änderungsdatum, Hash, Thumbnailpfad und Promptreferenz. prompts speichert den vollständigen Prompttext lokal. folders verwaltet überwachte Verzeichnisse und Scaninformationen. tokens enthält extrahierte Promptbestandteile. token_frequency speichert Häufigkeiten und Wichtigkeitswerte. prompt_variants verwaltet Basisprompts, Varianten und Ähnlichkeiten. evolution_cache enthält vorberechnete Evolution-Daten. settings speichert Konfiguration und Indexierungsoptionen.
+
+Beim ersten Start werden alle Verzeichnisse vollständig gescannt, Bilder und Prompts verknüpft und alle Daten einschließlich Prompttexten, Größe, Änderungsdatum und Hashwerten lokal gespeichert.
+
+Nach der Erstindexierung arbeiten Suche, Analyse und Anzeige ausschließlich gegen die Datenbank. Vollständige Rescans erfolgen nur auf ausdrücklichen Benutzerwunsch.
+
+Beim Programmstart werden lediglich library.db, Caches und Analyseergebnisse geladen. Anschließend erfolgt ein inkrementeller Scan. Verarbeitet werden nur neue, geänderte oder gelöschte Dateien. Änderungsprüfung erfolgt primär über Größe und Zeitstempel, Hashwerte nur bei Verdachtsfällen.
+
+Alle Verzeichnisse werden über einen Datei-Watcher überwacht. Da NAS-Systeme Änderungen nicht immer zuverlässig melden, existiert zusätzlich ein periodischer Hintergrundabgleich. Neue Dateien werden indexiert, geänderte aktualisiert und gelöschte entfernt oder deaktiviert.
+
+Alle Prompts werden über SQLite FTS5 volltextindiziert. Suchanfragen erfolgen ausschließlich über den Index. Es dürfen weder Promptdateien noch Verzeichnisse für Suchoperationen geöffnet werden.
+
+Verwende einen permanenten lokalen Thumbnail-Cache. Thumbnails werden einmal erzeugt und wiederverwendet. Die GUI nutzt für Übersichten ausschließlich den Cache und niemals Originalbilder.
+
+Zusätzlich existiert ein RAM-Cache für häufig verwendete Bilder, Prompts, Thumbnails, Suchergebnisse und Analysedaten. Verwende eine LRU- oder vergleichbare Strategie.
+
+Tokenisierung, Häufigkeitsberechnungen, Variantenbildung und Evolution-Analysen werden gespeichert und nur bei relevanten Änderungen aktualisiert. Prompt Evolution arbeitet ausschließlich mit Daten aus evolution_cache und darf niemals die gesamte Bibliothek beim Öffnen neu analysieren.
+
+Die Funktion "Neu indizieren" führt einen vollständigen Rescan aus, erstellt alle Indizes, Tokenstatistiken, Varianten und Evolution-Daten neu und aktualisiert sämtliche Caches.
+
+Mindestens 95 % aller Benutzeraktionen sollen ausschließlich gegen lokale Daten laufen. NAS-Zugriffe sind nur für Erstindexierung, Dateiänderungen, Nachladen von Originalbildern oder explizite Dateioperationen zulässig.
+
+Beschreibe die vollständige Architektur von library.db, FTS5-Index, Datei-Watcher, inkrementeller Indexierung, Thumbnail-Cache, RAM-Cache, Evolution-Cache, NAS-Zugriffen, Hintergrundprozessen sowie deren Zusammenspiel. Fokus: minimale Netzwerkzugriffe, schnelle Programmstarts, hohe Parallelisierung, Skalierbarkeit und maximale GUI-Performance.

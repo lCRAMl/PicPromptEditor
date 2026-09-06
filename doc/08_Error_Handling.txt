@@ -1,0 +1,21 @@
+Du bist Senior Software Architect und Python/PyQt6-Entwickler. Entwirf die vollständige Error-Handling-Architektur eines Prompt-Engineering-Tools. Ziel ist maximale Stabilität, Datenintegrität und Fehlertoleranz. Fehler dürfen niemals die GUI blockieren, die Datenbank beschädigen oder die Anwendung abstürzen lassen. Die Software muss auch bei NAS-, Datei-, Datenbank-, Parsing- oder Analysefehlern möglichst weiterarbeiten.
+
+Verwende vier Fehlerstufen: Info für Statusmeldungen ohne Benutzereingriff, Warning für eingeschränkte Funktionen bei weiterhin nutzbarer Anwendung, Error für fehlgeschlagene Operationen bei weiterlaufendem System und Critical für schwerwiegende Probleme wie beschädigte Datenbanken oder nicht verfügbare Kernkomponenten.
+
+Alle Komponenten müssen strukturierte Fehlerobjekte erzeugen und dürfen keine ungefangenen Exceptions erzeugen. Betroffen sind GUI, Database Layer, File Layer, Parsing Engine, Analysis Engine, Cache Layer, JobManager, FileWatcher und alle Background Jobs.
+
+NAS-Fehler dürfen die Anwendung nicht stoppen. Ist das NAS nicht erreichbar, muss die Software weiterhin mit lokal verfügbaren Daten, Datenbankeinträgen und Caches arbeiten können. Suchfunktionen, Analysen, Vergleiche und Evolution-Ansichten bleiben verfügbar, sofern die erforderlichen Daten bereits lokal vorliegen.
+
+Fehlende Bilder dürfen nicht zum Verlust des zugehörigen Prompts führen. Fehlende Prompts dürfen nicht zum Verlust des Bildes führen. In beiden Fällen werden Platzhalter und Statusinformationen angezeigt. Beschädigte Dateien werden erkannt, protokolliert und als ungültig markiert, ohne andere Funktionen zu beeinträchtigen.
+
+Beim Programmstart muss die Datenbank auf Existenz, Lesbarkeit und Konsistenz geprüft werden. Kann die Datenbank nicht geladen werden, muss ein Wiederherstellungs- oder Neuindizierungsmodus angeboten werden. Alle Datenbankänderungen erfolgen ausschließlich innerhalb von Transaktionen. Fehlerhafte Schreibvorgänge müssen automatisch per Rollback zurückgesetzt werden.
+
+Jeder Background Job arbeitet isoliert. Ein Fehler in Thumbnail-Erzeugung, Parsing, Analyse, Suche, Evolution oder Indexierung darf niemals andere Jobs oder den ThreadPool stoppen. Fehler werden protokolliert und an die GUI gemeldet.
+
+Erweitere das Datenbankschema um eine Tabelle error_log mit id, timestamp, severity, source, message, details und resolved. Alle Fehler und Warnungen werden dort gespeichert. Zusätzlich kann optional eine Tabelle system_status verwendet werden, um Informationen wie NAS-Erreichbarkeit, Indexstatus, letzten erfolgreichen Scan, letzte Analyse und letzte Evolution-Berechnung zu speichern.
+
+Die GUI soll einen zentralen Fehler- und Statusmechanismus besitzen. Warnungen und Fehler werden nicht über aufdringliche Dialoge angezeigt, sofern keine Benutzeraktion erforderlich ist. Stattdessen wird eine Statusanzeige ähnlich Visual Studio verwendet, die den aktuellen Zustand des Systems darstellt und bei Bedarf eine Problemliste öffnet.
+
+Die Architektur muss mindestens folgende Fehlerfälle behandeln: NAS nicht erreichbar, Bild fehlt, Prompt fehlt, beschädigte Bilddatei, beschädigte Promptdatei, Thumbnail fehlt, Datenbankfehler, FTS5-Fehler, Parsingfehler, Analysefehler, Cachefehler, Background-Job-Fehler, abgebrochene Indizierung, unvollständige Evolution-Daten, unerwartete Prozessabbrüche und Stromausfälle während Schreibvorgängen.
+
+Beschreibe die vollständige Architektur von Fehlerobjekten, Logging, Fehlerklassifikation, Fehlerweiterleitung, Recovery-Strategien, Datenbankschutz, Rollback-Verhalten, GUI-Integration, Fehlerprotokollierung, Hintergrundjob-Isolation, NAS-Fehlertoleranz, Wiederherstellungsmechanismen und dem Zusammenspiel mit SQLite, Caches, Background Jobs, Parsing Engine und Analysis Engine. Liefere eine produktionsreife Architektur mit Fokus auf Stabilität, Datenintegrität, Nachvollziehbarkeit und unterbrechungsfreies Arbeiten.
